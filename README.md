@@ -1,0 +1,2 @@
+# Learn_Sass_Compass
+掌握如何使用Sass和Compass寫出更優秀的CSS。比如說精靈圖自動合圖，屬性的瀏覽器前綴處理。
