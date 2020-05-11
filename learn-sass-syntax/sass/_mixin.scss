@@ -1,0 +1,38 @@
+@mixin col-6 {
+  width: 50%;
+  float: left;
+}
+//參數，默認值可用冒號加上
+@mixin col($width: 60%) {
+  width: $width;
+  float: left;
+}
+//sass中@media跟css區別:@media可以內崁在css規則中，生成時會被提出最外
+@mixin col-sm($width: 50%) {
+  @media (min-width: 768px) {
+    width: $width;
+    float: left;
+  }
+}
+
+//響應式用%數
+@mixin col-lg($width: 50%) {
+  @if type-of($width) !=number {
+    @error "$width應該是一個百分值,您輸入的是: #{$width}";
+  }
+
+  @if not unitless($width) {
+    @if unit($width) != '%' {
+      @error "$width應該是一個百分值,您輸入的是: #{$width}";
+    }
+  } @else {
+    @warn "$width應該是一個百分值,您輸入的是: #{$width}";
+    //然後把最後生成的width自動改成%
+    $width: (percentage($width) / 100);
+  }
+
+  @media (min-width: 1200px) {
+    width: $width;
+    float: left;
+  }
+}

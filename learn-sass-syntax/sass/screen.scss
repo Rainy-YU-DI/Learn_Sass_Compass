@@ -1,0 +1,168 @@
+@charset "UTF-8";
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+
+//screen.scss文件稱為:宿主文件
+//這邊的@import指令不是CSS原生的@import指令
+/* CSS中原生的@import 指令2大弊端:
+1.必須放在代碼最前面，否則不起作用
+2.對性能不利:A引入B時,瀏覽器下載A下來解析渲染過程中讀取到import時才在下載B,造成阻塞,影響渲染時間 */
+//sass雖然是css3的超級:一定支持css的@import但卻自己重定義@import:稱為control directives，效能將比原生好,將被引入文件合併，並輸出到相對應的css文件，並且@import可以被放在任何位置，如果被引入文件內有變量,則使用mixin函數:代表在宿主文件中可以隨意使用引入的內部變量和函數
+
+/*@import 'variables';基於sass既定規則，後面不用加.scss，因為
+1.沒有文件後綴名時，sass會自動添加scss或 sass
+2.同一目錄下，局部文件和非局部文件不能重名，所以引入局部文件時不需要把前面下滑線帶上*/
+@import 'variables', 'compass/reset';
+//sass提供一個load_paths選項,可以用來添加而外的尋目路徑，將compass目錄加入到尋目目錄當中,而reset則是compass提供的重製模塊:這邊為重新定義標籤樣式，覆蓋瀏覽器CSS的默認屬性,但reset太暴力，建議使用Normalize
+/*如果堅持使用css原生的@import ,只要符合以下任一建就會被認為是想用css 原生的@import :
+ex:@import url("varibales.css") projection tv
+ex:@import http://varibales.css"
+1.當@import 後邊跟上的文件名是以.css結尾的時候
+2.當@import 後面跟的是以http://開頭的字符串的時候
+3.當@import 後面跟的是一個url()函數的時候
+3.當@import 後面帶有media 裝置的時候
+
+*/
+//資料經compass轉成至screen.css
+/*
+*contents
+*settings:variables(變量集中儲存文件),mixin(集中儲存文件)
+*tools
+*components:reset(Compass內置瀏覽器重置樣式文件)
+*business
+*base:screen.scss(當前主頁樣式)
+*/
+@import 'mixin';
+//主標題樣式
+.headline {
+  font-family: $headline-ff;
+}
+//頁面主體內容樣式
+.main-sec {
+  font-family: $main-sec-ff;
+  .headline {
+    //屬性也可以合併後面要冒號
+    font: {
+      family: $main-sec-ff;
+      size: 16px;
+    }
+  }
+  .detail {
+    font-size: 12px;
+  }
+}
+/*可以增加效能改成:最後生成時卻不包含嵌套
+.main-sec {
+  font-family: $main-sec-ff;
+  @at-root{
+    .main-sec-headline {
+    //屬性也可以合併後面要冒號
+      font: {
+       family: $main-sec-ff;
+        size: 16px;
+      }
+     }
+    .main-sec-detail {
+      font-size: 12px;
+     }
+  } 
+}
+=>生成結果:(不包含外面)
+ .main-sec-headline {
+      font: {
+       family: $main-sec-ff;
+        size: 16px;
+      }
+  }
+  .main-sec-detail {
+      ont-size: 12px;
+  }
+
+*/
+
+//sass也可以自動轉HSL換成瀏覽器可以辨識的16進制color
+p {
+  color: hsl(270, 100%, 50%);
+}
+
+//定義函數:@mixin與引用:@include
+
+.webdemo-sec {
+  @include col-6();
+  @include col(50%);
+  @include col-sm(50%);
+  @include col-lg(60);
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+//擴增函數:@extend
+//代表將.serious-error 加在.error後面(這樣只要改error內的顏色.serious-error也會更著變)
+/*.error後面加.ins，.serious-error 也會更著繼承=>
+.error.ins, .ins.serious-error {
+  background-color: 0;
+}*/
+.error.ins {
+  background-color: green($color: #000000);
+}
+.error {
+  color: #f00;
+}
+.serious-error {
+  @extend .error;
+  border: 1px solid #f00;
+}
+//@eatend連續繼承:B繼承A，C繼承B
+.A {
+  color: blue;
+}
+.B {
+  @extend .A;
+  border: 1px solid black;
+}
+.C {
+  @extend .B;
+  font-size: 1px;
+}
+/*@eatend連續繼承結果:
+.A,.B,.C{
+  color: blue;
+}
+.B,.C{
+   border: 1px solid black;
+}
+*/
+/*另外:extend兩個知識點
+1.extend不可以繼承選擇器序列
+2.使用%來構建定義，這樣定義的%名不會被轉換到screen.css
+ex:
+%error {
+  color: #f00;
+}
+.serious-error {
+  @extend %error;
+  border: 1px solid #f00;
+}
+這樣就只有生成
+.serious-error {//沒有顯示.error本身
+ color: #f00;
+}
+.serious-error {
+  border: 1px solid #f00;
+}
+*/
+
+/*sass中@media跟css區別:
+1.sass中的media query可以內崁在css規則中，會在編譯生成後才把media query提到樣式得最高層級
+可以避免打亂樣式表流程
+*/
+
+/*注意:
+1.瀏覽器在解析css選擇器的時候是從右往左:先找嵌套最內部的元素，再一層層往外去遍歷找尋其父選擇器，直到找到或到<html>
+2.通過嵌套,有些副作用:增加了樣式修飾的權重/製造了樣式位制的依賴
+最佳實踐作法:
+再嵌套時,使用sass的at-root指令
+*/

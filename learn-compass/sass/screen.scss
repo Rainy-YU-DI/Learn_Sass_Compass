@@ -1,0 +1,107 @@
+/* Welcome to Compass.
+ * In this file you should write your main styles. (or centralize your imports)
+ * Import this file using the following HTML or equivalent:
+ * <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css" /> */
+//引入normalize模塊:只針對引入的地方重置
+@import 'normalize';
+//引入reset模塊:重置整個網頁規格:重新定義標籤樣式，覆蓋瀏覽器CSS的默認屬性
+@import 'compass/reset/utilities';
+@include global-reset;
+
+//引入合成圖
+@import '../sass/icons';
+
+//@include nested-reset:只讓.aaa被設定重置
+.aaa {
+  @include nested-reset;
+}
+
+//引入layout模塊:提供頁面局部樣式
+@import 'compass/layout'; //這樣就直接將三個內模塊引入了
+/* @import 'compass/layout/grid-background';//這是只選某個內模塊引入 */
+
+.circle {
+  @include stretch(5px, 5px, 6px, 4px);
+}
+//全局設sticky-footer高:50px
+@include sticky-footer(50px);
+
+$column-color: red;
+.ccc {
+  @include background($column-color);
+}
+
+//引入css3模塊:可以自動加上CSS3跨瀏覽器的前綴
+@import 'compass/css3';
+
+.shadow {
+  @include box-shadow(1px 1px 3px 2px #cfcecf);
+}
+.opacity {
+  @include opacity(0.3);
+}
+
+//引入browser support模塊
+@import 'compass/support';
+//用@debug在直行器上顯示browsers():compass默認支援的瀏覽器
+@debug browsers();
+//設定compass支持哪個瀏覽器
+$supported-browsers: chrome; //默認為browsers()
+//設定瀏覽器最小版本
+$browser-minimum-versions: (
+  'ie': '8',
+);
+
+//引入Typography模塊:用來修飾文本樣式
+@import 'compass/typography'; //可一次全引入
+//可分開引入typography其內部的4個小模塊
+@import 'compass/typography/links';
+
+a {
+  //a的底線在hover時出現
+  @include hover-link();
+  //a不同狀態顏色設定
+  @include link-colors(red, blue, yellow, black, blue);
+  //a抹去預設樣式(使其和父文本無異)
+  @include unstyled-link();
+}
+
+//分開引入typography其內部的4個小模塊
+@import 'compass/typography/text';
+/*這邊firefox不支持ellipsis,但
+step1:可以下命令:compass install compass/ellipsis來下載ellipsis.xml,
+step2開啟用mozilla-binding屬性:screen.scss中輸入:$use-mozilla-ellipsis-binding: true;
+=>screen.css就會綁訂好了=>-moz-binding: url('/stylesheets/xml/ellipsis.xml#ellipsis');*/
+$use-mozilla-ellipsis-binding: true;
+.p {
+  @include ellipsis();
+}
+
+//引入Vertical Rhythm模塊:用來設主體結構線
+//要先reset歸零所有margin
+@import 'compass/reset';
+@import 'compass/typography/vertical_rhythm';
+$base-font-size: 16px;
+$base-line-height: 24px;
+@include establish-baseline();
+body {
+  @include debug-vertical-alignment();
+}
+
+h1 {
+  @include adjust-font-size-to(48px);
+}
+h2 {
+  @include adjust-font-size-to(36px);
+}
+p {
+  @include adjust-font-size-to(24px);
+  margin: 1.5em 0; //24px行高的整數倍
+}
+
+//Helpers模塊
+/* .logo111 {
+  background-image: inline-image('1.jpg');
+}
+ */
+@debug compass-env();
